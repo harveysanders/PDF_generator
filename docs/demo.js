@@ -15,6 +15,13 @@ function list(buf) {
 	var field_specs;
 	try {
 		field_specs = make_pdfform().list_fields(buf);
+		const newFields = Object.keys(field_specs).reduce((newFields, fieldName) => {
+			newFields[fieldName] = 'taco'
+			return newFields
+		}, {});
+		var out_buf = pdfform().transform(buf, newFields);
+		console.log(new Uint8Array(out_buf).toString())
+
 	} catch (e) {
 		on_error(e);
 		return;
@@ -64,24 +71,25 @@ function list(buf) {
 
 // Example of filling out fields
 function fill(buf) {
-	var list_form = document.querySelector('.list_form');
-	var fields = {};
-	list_form.querySelectorAll('input,select').forEach(function(input) {
-		if ((input.getAttribute('type') === 'radio') && !input.checked) {
-			return;
-		}
+	// var list_form = document.querySelector('.list_form');
+	// var fields = {};
+	// list_form.querySelectorAll('input,select').forEach(function(input) {
+	// 	if ((input.getAttribute('type') === 'radio') && !input.checked) {
+	// 		return;
+	// 	}
 
-		var key = input.getAttribute('data-key');
-		if (!fields[key]) {
-			fields[key] = [];
-		}
-		var index = parseInt(input.getAttribute('data-idx'), 10);
-		var value = (input.getAttribute('type') === 'checkbox') ? input.checked : input.value;
-		fields[key][index] = value;
-	});
+	// 	var key = input.getAttribute('data-key');
+	// 	if (!fields[key]) {
+	// 		fields[key] = [];
+	// 	}
+	// 	var index = parseInt(input.getAttribute('data-idx'), 10);
+	// 	var value = (input.getAttribute('type') === 'checkbox') ? input.checked : input.value;
+	// 	fields[key][index] = value + 'taco';
+	// });
 
-	var filled_pdf; // Uint8Array
+	// var filled_pdf; // Uint8Array
 	try {
+		const fields = generateVS622(cft)
 		filled_pdf = make_pdfform().transform(buf, fields);
 	} catch (e) {
 		return on_error(e);
